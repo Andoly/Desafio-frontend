@@ -45,8 +45,10 @@ const Form = () => {
 
   function handleAddTasks(e) {
     e.preventDefault();
+    const preventRepeated = tasks.findIndex(t => t.tasks === value.trim())
 
-    if (value.trim().length > 0 ) {
+    if (value.trim().length > 0 && preventRepeated === -1) {
+      console.log('valor adicionado', value)
       setError("");
       const createTasks = {
         id: randomString.generate(8),
