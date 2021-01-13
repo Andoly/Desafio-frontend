@@ -1,36 +1,32 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import List from "./List";
+import ToDo from "./ToDo";
 
 import randomString from "randomstring";
 
-import Container from "@material-ui/core/Container";
 import { makeStyles } from "@material-ui/core/styles";
-import TextField from "@material-ui/core/TextField";
+import { TextField, Grid, Hidden } from "@material-ui/core";
 import Fab from "@material-ui/core/Fab";
 import AddBoxIcon from "@material-ui/icons/AddBox";
-
 
 const useStyles = makeStyles((theme) => ({
   root: {
     "& .MuiTextField-root": {
       margin: theme.spacing(1),
-      width: "120ch",
+      width: "90%",
+      flexGrow: 1,
     },
+  },
+  form: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
   },
 }));
 
-const useStylesForm = makeStyles({
-  root: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
-
 const Form = () => {
   const classForm = useStyles();
-  const form = useStylesForm();
 
   const getTasks = useSelector((state) => state.tasks.list);
 
@@ -45,15 +41,14 @@ const Form = () => {
 
   function handleAddTasks(e) {
     e.preventDefault();
-    const preventRepeated = tasks.findIndex(t => t.tasks === value.trim())
+    const preventRepeated = tasks.findIndex((t) => t.tasks === value.trim());
 
     if (value.trim().length > 0 && preventRepeated === -1) {
-      console.log('valor adicionado', value)
       setError("");
       const createTasks = {
         id: randomString.generate(8),
         tasks: value,
-        favorite: false
+        favorite: false,
       };
       const addItemArr = [...tasks, createTasks];
       dispatch({
@@ -62,9 +57,10 @@ const Form = () => {
       });
       setTasks([...addItemArr]);
       setValue("");
-      console.log(addItemArr)
+      // console.log(addItemArr);
     } else {
       setError("Please input something...");
+      window.alert(error)
     }
   }
 
@@ -86,16 +82,16 @@ const Form = () => {
 
   const dispatchTaskAction = (id, value) => {
     const taskIndex = tasks.findIndex((item) => item.id === id);
-    console.log(id, value)
-    const cloneTask = [...tasks]
-    cloneTask[taskIndex].tasks = value
-    console.log(cloneTask)
+    // console.log(id, value);
+    const cloneTask = [...tasks];
+    cloneTask[taskIndex].tasks = value;
+    // console.log(cloneTask);
     dispatch({
       type: "UPDATE",
       payload: cloneTask,
     });
     setTasks([...cloneTask]);
-  } 
+  };
 
   const removeTasksHandler = useCallback(
     (id) => {
@@ -110,42 +106,42 @@ const Form = () => {
   );
 
   return (
-    <>
-      <Container fixed>
-        <form
-          onSubmit={handleAddTasks}
-          className={classForm.root}
-        >
-          <div className={form.root}>
-            <TextField
-              label="Add tasks"
-              rowsMax={2}
-              variant="outlined"
-              type="text"
-              name="value"
-              id="inputTasks"
-              placeholder="Tasks..."
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-            >
-              {error.length > 0 && (
-                <small className="text-danger">{error}</small>
-              )}
-            </TextField>
-            <Fab color="primary" size="small" aria-label="submit" type="submit">
-              <AddBoxIcon />
-            </Fab>
-          </div>
-        </form>
-        <hr />
-        <List
-          tasksList={tasks}
-          onfavoriteTask={favoriteTasksHandler}
-          onUpdateTask={dispatchTaskAction}
-          onRemoveTask={removeTasksHandler}
-        />
-      </Container>
-    </>
+    <div>
+      <form onSubmit={handleAddTasks} className={classForm.root}>
+        <div className={classForm.form}>
+          <TextField
+            label="Add tasks"
+            rowsMax={2}
+            variant="outlined"
+            type="text"
+            name="value"
+            id="inputTasks"
+            placeholder="Tasks..."
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+          >
+          </TextField>
+          <Fab color="primary" size="small" aria-label="submit" type="submit">
+            <AddBoxIcon />
+          </Fab>
+        </div>
+      </form>
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={12} lg={3}>
+          <Hidden mdDown>
+            <ToDo />
+          </Hidden>
+        </Grid>
+        <Grid item xs={12} sm={12} md={12} lg={9}>
+          <List
+            tasksList={tasks}
+            onfavoriteTask={favoriteTasksHandler}
+            onUpdateTask={dispatchTaskAction}
+            onRemoveTask={removeTasksHandler}
+          />
+        </Grid>
+      </Grid>
+    </div>
   );
 };
 

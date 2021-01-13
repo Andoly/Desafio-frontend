@@ -15,7 +15,7 @@ const useStylesList = makeStyles({
     borderRadius: 1,
     boxShadow: "0 3px 5px 2px rgba(255, 105, 135, .3)",
     color: "white",
-    height: 28,
+    height: 42,
     padding: "10px",
     marginBottom: "8px",
     fontWeight: "600",
@@ -24,22 +24,27 @@ const useStylesList = makeStyles({
     alignItems: "center",
     position: "relative",
   },
-});
-const useStylesButton = makeStyles({
-  root: {
+  useStylesButton: {
     display: "flex",
     justifyContent: "space-between",
     width: "150px",
+    position: "relative",
+    zIndex: 10
   },
-});
-const useStyleMode = makeStyles({
-  root: {
+  useStyleMode: {
     display: "inline-flex",
     alignItems: "center",
     color: "white",
-  },
-});
 
+  },
+  ul: {
+    listStyleType: "none",
+  },
+  span: {
+    color: "#695A50",
+    paddingRight: "5px"
+  }
+});
 
 const Task = ({
   task,
@@ -50,8 +55,6 @@ const Task = ({
   onRemoveTask,
 }) => {
   const classList = useStylesList();
-  const classButton = useStylesButton();
-  const classMode = useStyleMode();
   const favoriteTaskHandler = useCallback(() => onfavoriteTask(id), [
     id,
     onfavoriteTask,
@@ -73,10 +76,10 @@ const Task = ({
   ]);
 
   return (
-    <li key={id}>
+    <li key={id} className={classList.ul}>
       <List className={classList.root}>
-        <div className={classMode.root}>
-          Task:{" "}
+        <div className={classList.useStyleMode}>
+          <span className={classList.span}>Task: </span> {" "}
           {!editMode ? (
             task
           ) : (
@@ -91,12 +94,11 @@ const Task = ({
             />
           )}
         </div>
-        <div className={classButton.root}>
+        <div className={classList.useStylesButton}>
           <Fab
             type="button"
-            classame="MuiAppBar-colorTransparent"
             size="small"
-            aria-label="done"
+            aria-label="favorite"
             onClick={favoriteTaskHandler}
           >
             {favorite ? (
