@@ -9,12 +9,14 @@ import { makeStyles } from "@material-ui/core/styles";
 import { TextField, Grid, Hidden } from "@material-ui/core";
 import Fab from "@material-ui/core/Fab";
 import AddBoxIcon from "@material-ui/icons/AddBox";
+import MuiAlert from "@material-ui/lab/Alert";
+import Snackbar from "@material-ui/core/Snackbar";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     "& .MuiTextField-root": {
       margin: theme.spacing(1),
-      width: "90%",
+      width: "80%",
       flexGrow: 1,
     },
   },
@@ -41,6 +43,7 @@ const Form = () => {
 
   function handleAddTasks(e) {
     e.preventDefault();
+    setError("");
     const preventRepeated = tasks.findIndex((t) => t.tasks === value.trim());
 
     if (value.trim().length > 0 && preventRepeated === -1) {
@@ -58,9 +61,14 @@ const Form = () => {
       setTasks([...addItemArr]);
       setValue("");
       // console.log(addItemArr);
-    } else {
-      setError("Please input something...");
-      window.alert(error)
+    }
+    if (value.trim().length === 0) {
+      setError("Por favor insira algo");
+      return;
+    }
+    if (preventRepeated !== -1) {
+      setError("Esta tarefa já foi inserida");
+      return;
     }
   }
 
@@ -104,6 +112,10 @@ const Form = () => {
     },
     [dispatch, tasks]
   );
+  function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+  }
+  const timeClose = () => setInterval(setError(""), 5000);
 
   return (
     <div>
@@ -119,8 +131,12 @@ const Form = () => {
             placeholder="Tasks..."
             value={value}
             onChange={(e) => setValue(e.target.value)}
-          >
-          </TextField>
+          ></TextField>
+          {error && (
+            <Snackbar open={true} onClose={timeClose} autoHideDuration={1000}>
+              <Alert severity="error">{error}</Alert>
+            </Snackbar>
+          )}
           <Fab color="primary" size="small" aria-label="submit" type="submit">
             <AddBoxIcon />
           </Fab>
